@@ -52,9 +52,20 @@ object Utils {
                 .joinToString("").ifEmpty { null }
 
     fun transliteration(payload: String, divider: String = " "): String {
-        val result = payload.split(" ")
-                //.map { s -> "111" /*s.map { c -> transmap[c.tostring()] }.tostring()*/ }
-                .joinToString { divider }
+        val mapCharFunc: (Char) -> String = { c ->
+            var t = transMap[c.toLowerCase().toString()]
+            if (t != null) {
+                if (c.isUpperCase()) t = t.capitalize()
+            }
+            else {
+                t = c.toString()
+            }
+            t
+        }
+
+        val parts = payload.split(" ")
+                .map { s -> s.map(mapCharFunc).joinToString("") }
+        val result = parts.joinToString(divider)
         return result
 
     }

@@ -1,11 +1,16 @@
 package ru.skillbranch.devintensive
 
+import android.media.Image
 import org.junit.Test
 
 import org.junit.Assert.*
 import ru.skillbranch.devintensive.extensions.TimeUnits
 import ru.skillbranch.devintensive.extensions.add
 import ru.skillbranch.devintensive.extensions.format
+import ru.skillbranch.devintensive.extensions.humanizeDiff
+import ru.skillbranch.devintensive.models.BaseMessage
+import ru.skillbranch.devintensive.models.Chat
+import ru.skillbranch.devintensive.models.ImageMessage
 import ru.skillbranch.devintensive.models.User
 import ru.skillbranch.devintensive.utils.Utils
 import java.util.*
@@ -50,6 +55,14 @@ class ExampleUnitTest {
     }
 
     @Test
+    fun test_messages() {
+        val m1 = BaseMessage.makeMessage(User.makeUser("Вася Пупкин"), Chat("1"), Date().add(-10, TimeUnits.MINUTE), "image", "http://ya.ru")
+        println(m1.formatMessage())
+        val m2 = BaseMessage.makeMessage(User.makeUser("Игнат Петров"), Chat("1"), Date().add(-1, TimeUnits.SECOND), "text", "привет")
+        println(m2.formatMessage())
+    }
+
+    @Test
     fun test_dateUtils() {
         val d1 = Date()
         println(d1.format())
@@ -78,4 +91,26 @@ class ExampleUnitTest {
         println(s2)
     }
 
+    @Test
+    fun test_plural() {
+        for (i in 0..125) {
+            println(TimeUnits.DAY.plural(i))
+        }
+    }
+
+    @Test
+    fun test_dateHumanize() {
+        val s1 = Date().add(-2, TimeUnits.HOUR).humanizeDiff() //2 часа назад
+        println(s1)
+        val s2 = Date().add(-5, TimeUnits.DAY).humanizeDiff() //5 дней назад
+        println(s2)
+        val s3 = Date().add(2, TimeUnits.MINUTE).humanizeDiff() //через 2 минуты
+        println(s3)
+        val s4 = Date().add(7, TimeUnits.DAY).humanizeDiff() //через 7 дней
+        println(s4)
+        val s5 = Date().add(-400, TimeUnits.DAY).humanizeDiff() //более года назад
+        println(s5)
+        val s6 = Date().add(400, TimeUnits.DAY).humanizeDiff() //более чем через год
+        println(s6)
+    }
 }
