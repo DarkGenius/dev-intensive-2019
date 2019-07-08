@@ -57,4 +57,25 @@ class ExampleUnitTest {
         println(d2.format())
         println(d1.format())
     }
+
+    @Test
+    fun test_initials() {
+        val s1 = Utils.toInitials("john" ,"doe") //JD
+        println(s1)
+        val s2 = Utils.toInitials("John", null) //J
+        println(s2)
+        val s3 = Utils.toInitials(null, null) //null
+        println(s3)
+        val s4 = Utils.toInitials(" ", "") //null
+        println(s4)
+    }
+
+    @Test
+    fun test_transliterate() {
+        val s1 = Utils.transliteration("Женя Стереотипов") //Zhenya Stereotipov
+        println(s1)
+        val s2 = Utils.transliteration("Amazing Петр","_") //Amazing_Petr
+        println(s2)
+    }
+
 }
