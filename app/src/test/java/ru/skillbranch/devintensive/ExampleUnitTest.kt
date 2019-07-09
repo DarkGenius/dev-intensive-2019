@@ -8,6 +8,7 @@ import ru.skillbranch.devintensive.extensions.TimeUnits
 import ru.skillbranch.devintensive.extensions.add
 import ru.skillbranch.devintensive.extensions.format
 import ru.skillbranch.devintensive.extensions.humanizeDiff
+import ru.skillbranch.devintensive.extensions.truncate
 import ru.skillbranch.devintensive.models.BaseMessage
 import ru.skillbranch.devintensive.models.Chat
 import ru.skillbranch.devintensive.models.ImageMessage
@@ -112,5 +113,15 @@ class ExampleUnitTest {
         println(s5)
         val s6 = Date().add(400, TimeUnits.DAY).humanizeDiff() //более чем через год
         println(s6)
+    }
+
+    @Test
+    fun test_truncate(){
+        val s1 = "Bender Bending Rodriguez — дословно «Сгибальщик Сгибающий Родригес»".truncate() //Bender Bending R...
+        println(s1)
+        val s2 = "Bender Bending Rodriguez — дословно «Сгибальщик Сгибающий Родригес»".truncate(15) //Bender Bending...
+        println(s2)
+        val s3 = "A     ".truncate(3) //A
+        println(s3)
     }
 }
