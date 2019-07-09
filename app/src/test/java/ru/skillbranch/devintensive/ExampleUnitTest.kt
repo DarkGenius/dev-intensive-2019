@@ -4,11 +4,7 @@ import android.media.Image
 import org.junit.Test
 
 import org.junit.Assert.*
-import ru.skillbranch.devintensive.extensions.TimeUnits
-import ru.skillbranch.devintensive.extensions.add
-import ru.skillbranch.devintensive.extensions.format
-import ru.skillbranch.devintensive.extensions.humanizeDiff
-import ru.skillbranch.devintensive.extensions.truncate
+import ru.skillbranch.devintensive.extensions.*
 import ru.skillbranch.devintensive.models.BaseMessage
 import ru.skillbranch.devintensive.models.Chat
 import ru.skillbranch.devintensive.models.ImageMessage
@@ -123,5 +119,26 @@ class ExampleUnitTest {
         println(s2)
         val s3 = "A     ".truncate(3) //A
         println(s3)
+    }
+
+    @Test
+    fun test_stripHtml() {
+        val s1 = "&gt;&lt;&тест;as d    4  <html><a href=\"4545\" disable>gfgfg</a>".stripHtml()
+        println(s1)
+    }
+
+    @Test
+    fun test_UserBuilder() {
+        val u1 = User.Builder()
+                .id("id1")
+                .avatar("ava")
+                .firstName("Ivan")
+                .lastName("Solovev")
+                .isOnline(true)
+                .lastVisit(Date().add(-2, TimeUnits.HOUR))
+                .rating(100)
+                .respect(100)
+                .build()
+        println(u1)
     }
 }
