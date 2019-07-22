@@ -2,6 +2,8 @@ package ru.skillbranch.devintensive.models
 
 class Bender(var status: Status = Status.NORMAL, var question: Question = Question.NAME) {
 
+    var wrongCount: Int = 0
+
     fun askQuestion(): String = when (question) {
        Question.NAME -> Question.NAME.question
        Question.PROFESSION -> Question.PROFESSION.question
@@ -12,13 +14,24 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
     }
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-        return if (question.answers.contains(answer)) {
+        val validationResult = question.validate(answer)
+
+        return if (validationResult?.isValid == false) {
+            "${validationResult.errorMessage}\n${question.question}" to status.color
+        }
+        else if (question.answers.contains(answer.toLowerCase())) {
             question = question.nextQuestion()
-            "Отлично - это правильный ответ!\n${question.question}" to status.color
+            "Отлично - ты справился\n${question.question}" to status.color
+        }
+        else if (++wrongCount > 3) {
+            wrongCount = 0
+            status = Status.NORMAL
+            question = Question.NAME
+            "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
         }
         else {
             status = status.nextStatus()
-            "Это неправильный ответ!\n${question.question}" to status.color
+            "Это неправильный ответ\n${question.question}" to status.color
         }
     }
 
@@ -37,23 +50,33 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
             }
         }
     }
-    enum class Question(val question: String, val answers: List<String>) {
-        NAME("Как меня зовут?", listOf("бендер", "bender")) {
+    enum class Question(val question: String, val answers: List<String>, private val validator: IValidator? = null) {
+        NAME("Как меня зовут?",
+                listOf("бендер", "bender"),
+                RegexValidator(Regex("""^[A-ZА-Я].*$"""), "Имя должно начинаться с заглавной буквы")) {
             override fun nextQuestion(): Question = PROFESSION
         },
-        PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender"))
+        PROFESSION("Назови мою профессию?",
+                listOf("сгибальщик", "bender"),
+                RegexValidator(Regex("""^[a-zа-я].*$"""), "Профессия должна начинаться со строчной буквы"))
         {
             override fun nextQuestion(): Question = MATERIAL
         },
-        MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "metal", "iron", "wood"))
+        MATERIAL("Из чего я сделан?",
+                listOf("металл", "дерево", "metal", "iron", "wood"),
+                RegexValidator(Regex("""^[^0-9]*$"""), "Материал не должен содержать цифр"))
         {
             override fun nextQuestion(): Question = BDAY
         },
-        BDAY("Когда меня создали?", listOf("2993"))
+        BDAY("Когда меня создали?",
+                listOf("2993"),
+                RegexValidator(Regex("""^[0-9]*$"""), "Год моего рождения должен содержать только цифры"))
         {
             override fun nextQuestion(): Question = SERIAL
         },
-        SERIAL("Мой серийный номер?", listOf("2716057"))
+        SERIAL("Мой серийный номер?",
+                listOf("2716057"),
+                RegexValidator(Regex("""^[0-9]{7}$"""), "error"))
         {
             override fun nextQuestion(): Question = IDLE
         },
@@ -63,5 +86,25 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
         };
 
         abstract fun nextQuestion(): Question
+
+        fun validate(text: String): ValidationResult? {
+            return if (this.validator != null) this.validator.validate(text) else null
+        }
     }
+
+}
+
+class ValidationResult(val isValid: Boolean, val errorMessage: String?) {
+}
+
+interface IValidator {
+    fun validate(text: String): ValidationResult
+}
+
+class RegexValidator(private val regex: Regex, private val errorMessage: String): IValidator {
+    override fun validate(text: String): ValidationResult {
+        val isValid = regex.matchEntire(text) != null
+        return ValidationResult(isValid, if (isValid) null else errorMessage)
+    }
+
 }

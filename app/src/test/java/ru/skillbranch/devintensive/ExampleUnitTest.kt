@@ -9,10 +9,7 @@ import ru.skillbranch.devintensive.extensions.add
 import ru.skillbranch.devintensive.extensions.format
 import ru.skillbranch.devintensive.extensions.humanizeDiff
 import ru.skillbranch.devintensive.extensions.truncate
-import ru.skillbranch.devintensive.models.BaseMessage
-import ru.skillbranch.devintensive.models.Chat
-import ru.skillbranch.devintensive.models.ImageMessage
-import ru.skillbranch.devintensive.models.User
+import ru.skillbranch.devintensive.models.*
 import ru.skillbranch.devintensive.utils.Utils
 import java.util.*
 
@@ -123,5 +120,20 @@ class ExampleUnitTest {
         println(s2)
         val s3 = "A     ".truncate(3) //A
         println(s3)
+    }
+
+    @Test
+    fun test_validate() {
+        val v1 = RegexValidator(Regex("""^[A-ZА-Я].*$"""), "Имя должно начинаться с заглавной буквы")
+        println(v1.validate("Вася").isValid)
+
+        val v2 = RegexValidator(Regex("""^[^0-9]*$"""), "error")
+        println(v2.validate("fg").isValid)
+
+        val v3 = RegexValidator(Regex("""^[0-9]*$"""), "error")
+        println(v3.validate("23").isValid)
+
+        val v4 = RegexValidator(Regex("""^[0-9]{7}$"""), "error")
+        println(v4.validate("1234567").isValid)
     }
 }
