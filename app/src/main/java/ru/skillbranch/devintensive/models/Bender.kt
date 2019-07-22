@@ -23,7 +23,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
             question = question.nextQuestion()
             "Отлично - ты справился\n${question.question}" to status.color
         }
-        else if (++wrongCount > 3) {
+        else if (++wrongCount >= 3) {
             wrongCount = 0
             status = Status.NORMAL
             question = Question.NAME
@@ -76,7 +76,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
         },
         SERIAL("Мой серийный номер?",
                 listOf("2716057"),
-                RegexValidator(Regex("""^[0-9]{7}$"""), "error"))
+                RegexValidator(Regex("""^[0-9]{7}$"""), "Серийный номер содержит только цифры, и их 7"))
         {
             override fun nextQuestion(): Question = IDLE
         },
