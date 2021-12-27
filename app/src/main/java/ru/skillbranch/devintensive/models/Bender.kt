@@ -2,8 +2,6 @@ package ru.skillbranch.devintensive.models
 
 class Bender(var status: Status = Status.NORMAL, var question: Question = Question.NAME) {
 
-    var wrongCount: Int = 0
-
     fun askQuestion(): String = when (question) {
        Question.NAME -> Question.NAME.question
        Question.PROFESSION -> Question.PROFESSION.question
@@ -23,8 +21,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
             question = question.nextQuestion()
             "Отлично - ты справился\n${question.question}" to status.color
         }
-        else if (++wrongCount >= 3) {
-            wrongCount = 0
+        else if (status == Status.CRITICAL) {
             status = Status.NORMAL
             question = Question.NAME
             "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
